@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  mongodb:
+    image: mongo:5.0.2
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+    ports:
+      - 27017:27017
+    volumes:
+      - db:/data/db
+  web:
+    build: ./my-new-app-docker
+    restart: unless-stopped
+    env_file: ./my-new-app-docker/.env
+    ports:
+       - 3000:3000
+    stdin_open: true
+    tty: true    
+  app:
+    depends_on:
+      - mongodb
+    build: ./backend
+    restart: unless-stopped
+    env_file: ./backend/.env
+    ports:
+       - 9000:9000
+    environment:
+      - DB_HOST=mongodb
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=hello
+      - DB_PORT=27017
+    stdin_open: true
+    tty: true
+
+volumes:
+  db:
