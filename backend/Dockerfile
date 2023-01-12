@@ -14,6 +14,6 @@ RUN npm install
 
 # Bundle app source
 COPY . .
-
+COPY .env ./
 EXPOSE 9000
-CMD [ "node", "index.js" ]
+CMD [ "npm", "start" ]

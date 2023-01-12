@@ -11,21 +11,31 @@ services:
     volumes:
       - db:/data/db
   web:
+    image: web-react
     build: ./my-new-app-docker
     restart: unless-stopped
-    env_file: ./my-new-app-docker/.env
+    env_file: ./.env 
+    volumes:
+        - './my-new-app-docker:/app'
+        - /app/node_modules
     ports:
-       - 3000:3000
+       - ${FRONT_END_PORT}:${FRONT_END_PORT}
     stdin_open: true
-    tty: true    
+    tty: true
+    environment:
+        - CHOKIDAR_USEPOLLING=true  
   app:
+    image: node-server
     depends_on:
       - mongodb
     build: ./backend
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
     restart: unless-stopped
-    env_file: ./backend/.env
+    env_file: ./.env
     ports:
-       - 9000:9000
+       - ${BACK_END_PORT}:${BACK_END_PORT}
     environment:
       - DB_HOST=mongodb
       - DB_USER=root
